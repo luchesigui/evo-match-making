@@ -2,13 +2,13 @@ import pandas as pd
 import os
 from phone_utils import padronizar_telefone
 
-# Obtenha o diretório atual do script (mais robusto)
+# Obtenha informações do diretório
 script_dir = os.path.dirname(__file__)
+data_dir = os.path.join(script_dir, 'data', '2025')
 
-# Construa os caminhos completos para os arquivos
-# Ajuste 'Caminho/Completo/Ate/Sua/Pasta/' conforme o local real
-caminho_clientes = os.path.join(script_dir, 'clientes.csv')
-caminho_report = os.path.join(script_dir, 'meta-ads.xlsx')
+# Obter caminhos dos arquivos
+caminho_clientes = os.path.join(data_dir, 'clientes.csv')
+caminho_report = os.path.join(data_dir, 'meta-ads.xlsx')
 
 # Carregar os dados
 df_clientes = pd.read_csv(caminho_clientes)
