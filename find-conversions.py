@@ -1,5 +1,5 @@
-import pandas as pd
 import os
+import pandas as pd
 from phone_utils import padronizar_telefone
 
 # Obtenha informações do diretório
