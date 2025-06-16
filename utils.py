@@ -1,5 +1,7 @@
 import re
 import pandas as pd
+from datetime import datetime
+import os
 
 def padronizar_telefone(telefone):
     # Remove tudo que não for número
@@ -39,7 +41,7 @@ def parsear_contrato(contrato):
     # Remove espaços extras e retorna
     return contrato.strip()
 
-def mostrar_metricas_conversao(df_clientes, df_report, df_repetidos):
+def calcular_metricas_conversao(df_clientes, df_report, df_repetidos):
     total_clientes = len(df_clientes)
     total_oportunidades = len(df_report)
     
@@ -50,7 +52,49 @@ def mostrar_metricas_conversao(df_clientes, df_report, df_repetidos):
     # Calcula taxa de conversão
     taxa_conversao = (total_conversoes / total_oportunidades) * 100 if total_oportunidades > 0 else 0
     
-    print(f"Total de clientes: {total_clientes}")
-    print(f"Total de oportunidades: {total_oportunidades}")
-    print(f"Total de conversões: {total_conversoes}")
-    print(f"Taxa de conversão: {taxa_conversao:.2f}%") 
+    return {
+        'total_clientes': total_clientes,
+        'total_oportunidades': total_oportunidades,
+        'total_conversoes': total_conversoes,
+        'taxa_conversao': taxa_conversao
+    }
+
+def mostrar_metricas_conversao(df_clientes, df_report, df_repetidos):
+    metricas = calcular_metricas_conversao(df_clientes, df_report, df_repetidos)
+    
+    print(f"Total de clientes: {metricas['total_clientes']}")
+    print(f"Total de oportunidades: {metricas['total_oportunidades']}")
+    print(f"Total de conversões: {metricas['total_conversoes']}")
+    print(f"Taxa de conversão: {metricas['taxa_conversao']:.2f}%")
+    
+    return metricas
+
+def salvar_metricas_diarias(metricas, report_dir):
+    # Criar DataFrame com as métricas do dia
+    hoje = datetime.now().strftime('%Y-%m-%d')
+    df_dia = pd.DataFrame([{
+        'running_date': hoje,
+        'conversion_rate': f"{metricas['taxa_conversao']:.2f}%"
+    }])
+    
+    # Criar diretório de relatórios se não existir
+    os.makedirs(report_dir, exist_ok=True)
+    
+    # Caminho do arquivo de relatório
+    report_path = os.path.join(report_dir, 'monthly_report.csv')
+    
+    # Se o arquivo existe, verificar se já tem dados do dia
+    if os.path.exists(report_path):
+        df_existente = pd.read_csv(report_path)
+        if not df_existente[df_existente['running_date'] == hoje].empty:
+            print(f"\nJá existem métricas registradas para {hoje}")
+            return
+        
+        # Adicionar nova linha
+        df_existente = pd.concat([df_existente, df_dia], ignore_index=True)
+    else:
+        df_existente = df_dia
+    
+    # Salvar arquivo
+    df_existente.to_csv(report_path, index=False)
+    print(f"\nMétricas salvas com sucesso")
