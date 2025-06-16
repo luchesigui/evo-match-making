@@ -37,4 +37,20 @@ def parsear_contrato(contrato):
     contrato = re.sub(r'\([^)]*\)', '', contrato)
     
     # Remove espaços extras e retorna
-    return contrato.strip() 
+    return contrato.strip()
+
+def mostrar_metricas_conversao(df_clientes, df_report, df_repetidos):
+    total_clientes = len(df_clientes)
+    total_oportunidades = len(df_report)
+    
+    # Conta conversões excluindo FREEPASS
+    conversoes = df_repetidos[~df_repetidos['contrato'].str.contains('FREEPASS', case=False, na=False)]
+    total_conversoes = len(conversoes)
+    
+    # Calcula taxa de conversão
+    taxa_conversao = (total_conversoes / total_oportunidades) * 100 if total_oportunidades > 0 else 0
+    
+    print(f"Total de clientes: {total_clientes}")
+    print(f"Total de oportunidades: {total_oportunidades}")
+    print(f"Total de conversões: {total_conversoes}")
+    print(f"Taxa de conversão: {taxa_conversao:.2f}%") 

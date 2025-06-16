@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from utils import padronizar_telefone, parsear_contrato
+from utils import padronizar_telefone, parsear_contrato, mostrar_metricas_conversao
 
 # Obtenha informações do diretório
 script_dir = os.path.dirname(__file__)
@@ -23,7 +23,13 @@ telefones_report = set(df_report['telefone_padrao'])
 repetidos = df_clientes[df_clientes['telefone_padrao'].isin(telefones_report)]
 
 # Parsear a coluna contrato
-repetidos['contrato'] = repetidos['contrato'].apply(parsear_contrato)
+repetidos.loc[:, 'contrato'] = repetidos['contrato'].apply(parsear_contrato)
 
 # Mostrar os repetidos (nome e telefone)
+print("\n================================= Detalhes dos Clientes =================================")
 print(repetidos[['nome', 'telefone_padrao', 'contrato']])
+print("\n=========================================================================================\n")
+
+
+# Mostrar métricas de conversão
+mostrar_metricas_conversao(df_clientes, df_report, repetidos)
