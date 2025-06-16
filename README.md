@@ -6,10 +6,17 @@ Este projeto Python tem como objetivo principal padronizar números de telefone 
 
 Siga estes passos para configurar e executar o projeto em sua máquina local.
 
+### TLDR;
+
+1. Garanta que os arquivos estão na pasta data/{ano_atual};
+   1. A base de clientes atuais deve ser o arquivo `clientes.csv`
+   2. A base de oportunidades pode ser qualquer outro excel, mas lembre-se de atualizar a env `LEADS_FILE_NAME` do seu .env;
+2. Rode o comando `make start`;
+
 ### Pré-requisitos
 
 Certifique-se de ter o Python instalado em seu sistema. Recomenda-se o Python 3.7 ou superior.
-Você pode baixá-lo em [python.org](https://www.python.org/downloads/). O `pip` (gerenciador de pacotes do Python) geralmente vem junto com a instalação.
+Você pode baixá-lo em [python.org](https://www.python.org/downloads/). O `pip` ou `pip3` (gerenciador de pacotes do Python) geralmente vem junto com a instalação.
 
 ### 📦 Instalação
 
@@ -36,15 +43,15 @@ Você pode baixá-lo em [python.org](https://www.python.org/downloads/). O `pip`
 
 3.  **Ative o Ambiente Virtual:**
 
-    - **No Windows:**
-      ```bash
-      .\venv\Scripts\activate
-      ```
-    - **No macOS/Linux:**
-      `bash
-source venv/bin/activate
-`
-      Você saberá que o ambiente está ativado quando `(venv)` aparecer no início da linha de comando do seu terminal.
+        - **No Windows:**
+          ```bash
+          .\venv\Scripts\activate
+          ```
+        - **No macOS/Linux:**
+          `bash
+
+    source venv/bin/activate
+    `      Você saberá que o ambiente está ativado quando`(venv)` aparecer no início da linha de comando do seu terminal.
 
 4.  **Instale as Dependências:**
 
@@ -62,14 +69,14 @@ Este script espera dois arquivos de dados na **mesma pasta** onde o script `anal
 
   - Exemplo de `clientes.csv`:
     ```csv
-    id,telefone,nome
-    1,5511987654321,Cliente A
-    2,5521876543210,Cliente B
-    3,123456789,Cliente C
+    idCliente,nome,contrato,telefone
+    1,Cliente A,WELLHUB,5511987654321
+    1,Cliente B,FREPASS,552198765432
+    1,Cliente C,NaN,5531998765432
     ```
 
-- **`Report chat pro.xlsx`**: Um arquivo Excel contendo as colunas `Telefone`, `Primeiro nome` e `Sobrenome`.
-  - Exemplo de `Report chat pro.xlsx` (primeiras linhas):
+- **`meta-ads.xlsx`**: Um arquivo Excel contendo as colunas `Telefone`, `Primeiro nome` e `Sobrenome`.
+  - Exemplo de `meta-ads.xlsx` (primeiras linhas):
     | Telefone | Primeiro nome | Sobrenome |
     | :------- | :------------ | :-------- |
     | 5511987654321 | João | Silva |
@@ -81,7 +88,7 @@ Este script espera dois arquivos de dados na **mesma pasta** onde o script `anal
 ### 🏃 Como Executar
 
 1.  **Certifique-se de que seu ambiente virtual está ativado.** (Veja o passo 3 em "Instalação")
-2.  **Certifique-se de que os arquivos de dados (`clientes.csv` e `Report chat pro.xlsx`) estão na mesma pasta do script `analise_telefones.py`.**
+2.  **Certifique-se de que os arquivos de dados (`clientes.csv` e `meta-ads.xlsx`) estão na mesma pasta do script `analise_telefones.py`.**
 3.  **No terminal, execute o script:**
 
     ```bash
@@ -92,4 +99,4 @@ Este script espera dois arquivos de dados na **mesma pasta** onde o script `anal
 
 ### 💻 Resultado
 
-O script processará os dados e exibirá no terminal uma tabela (DataFrame do pandas) com os "Primeiro nome", "Sobrenome", "Telefone" (original) e "telefone_padrao" de todos os clientes do `Report chat pro.xlsx` que possuem um telefone padronizado correspondente na base `clientes.csv`.
+O script processará os dados e exibirá no terminal uma tabela (DataFrame do pandas) com os "Nome", "Telefone" e "Contrato" de todos os clientes do `clientes.csv` que possuem um telefone padronizado correspondente na base `meta-ads.xlsx` e salvara a taxa de conversão em um arquivo de report dentro da pasta `reports/{ano_atual}`.
