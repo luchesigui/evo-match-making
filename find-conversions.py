@@ -1,6 +1,10 @@
 import os
 import pandas as pd
 from utils import padronizar_telefone, parsear_contrato, mostrar_metricas_conversao
+from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente
+load_dotenv()
 
 # Obtenha informações do diretório
 script_dir = os.path.dirname(__file__)
@@ -8,7 +12,7 @@ data_dir = os.path.join(script_dir, 'data', '2025')
 
 # Obter caminhos dos arquivos
 caminho_clientes = os.path.join(data_dir, 'clientes.csv')
-caminho_report = os.path.join(data_dir, 'meta-ads.xlsx')
+caminho_report = os.path.join(data_dir, os.getenv('LEADS_FILE_NAME', 'meta-ads.xlsx'))
 
 # Carregar os dados
 df_clientes = pd.read_csv(caminho_clientes)
