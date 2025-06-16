@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from phone_utils import padronizar_telefone
+from utils import padronizar_telefone, parsear_contrato
 
 # Obtenha informações do diretório
 script_dir = os.path.dirname(__file__)
@@ -21,6 +21,9 @@ df_report['telefone_padrao'] = df_report['Telefone'].apply(padronizar_telefone)
 # Procurar interseção
 telefones_report = set(df_report['telefone_padrao'])
 repetidos = df_clientes[df_clientes['telefone_padrao'].isin(telefones_report)]
+
+# Parsear a coluna contrato
+repetidos['contrato'] = repetidos['contrato'].apply(parsear_contrato)
 
 # Mostrar os repetidos (nome e telefone)
 print(repetidos[['nome', 'telefone_padrao', 'contrato']])

@@ -1,4 +1,5 @@
 import re
+import pandas as pd
 
 def padronizar_telefone(telefone):
     # Remove tudo que não for número
@@ -19,4 +20,21 @@ def padronizar_telefone(telefone):
     if len(telefone) == 13 and telefone.startswith('55'):
         return telefone
     # Se não encaixa, retorna o que tem
-    return telefone 
+    return telefone
+
+def parsear_contrato(contrato):
+    # Se for NaN, retorna o texto padrão
+    if pd.isna(contrato):
+        return "FREEPASS - NÃO RENOVADO"
+    
+    # Converte para string
+    contrato = str(contrato)
+    
+    # Remove pontuação
+    contrato = contrato.replace('.', '')
+    
+    # Remove texto entre parênteses
+    contrato = re.sub(r'\([^)]*\)', '', contrato)
+    
+    # Remove espaços extras e retorna
+    return contrato.strip() 
