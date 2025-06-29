@@ -12,13 +12,12 @@ data_dir = os.path.join(script_dir, 'data', '2025')
 report_dir = os.path.join(script_dir, 'reports', '2025')
 
 # Obter caminhos dos arquivos
-caminho_clientes = os.path.join(data_dir, 'clientes.csv')
+caminho_clientes = os.path.join(data_dir, 'clientes.xlsx')
 caminho_report = os.path.join(data_dir, os.getenv('LEADS_FILE_NAME', 'meta-ads.xlsx'))
 
 # Carregar os dados
-df_clientes = pd.read_csv(caminho_clientes)
+df_clientes = pd.read_excel(caminho_clientes)
 df_report = pd.read_excel(caminho_report)
-
 # Padronizar telefones dos dois arquivos
 df_clientes['telefone_padrao'] = df_clientes['telefone'].apply(padronizar_telefone)
 df_report['telefone_padrao'] = df_report['Telefone'].apply(padronizar_telefone)
