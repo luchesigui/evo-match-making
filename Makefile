@@ -12,7 +12,7 @@ install: venv
 	$(PIP) install -r requirements.txt
 
 start: venv
-	$(PYTHON) find-conversions.py
+	$(PYTHON) divide-alunos-e-agregadores.py
 
 clean:
 	rm -rf __pycache__
