@@ -109,7 +109,7 @@ def main():
     print("🔄 Starting alunos filtering process...")
     
     # File paths
-    clientes_file = "clientes.xlsx"
+    clientes_file = "frequencia.xlsx"
     output_file = "alunos.xlsx"
     agregadores_file = "agregadores.xlsx"
     
