@@ -9,6 +9,7 @@ Creates two files:
 import pandas as pd
 import os
 import sys
+from datetime import datetime
 
 def load_excel_file(file_path):
     """Load Excel file and return DataFrame"""
@@ -104,14 +105,44 @@ def filter_alunos_by_contrato(df):
     
     return result_df, agregadores_result_df
 
+def generate_output_filename(file_type):
+    """
+    Generate output filename based on current date
+    Format: 2025-{month}-{period}-acessos-{type}.xlsx
+    
+    Args:
+        file_type: 'alunos' or 'agregadores'
+    
+    Returns:
+        Formatted filename
+    """
+    now = datetime.now()
+    
+    # Month names in Portuguese (3 letters)
+    months = {
+        1: 'jan', 2: 'fev', 3: 'mar', 4: 'abr',
+        5: 'mai', 6: 'jun', 7: 'jul', 8: 'ago',
+        9: 'set', 10: 'out', 11: 'nov', 12: 'dez'
+    }
+    
+    month = months[now.month]
+    
+    # Determine period based on day
+    period = "1-3" if now.day < 20 else "4-7"
+    
+    # Format: 2025-{month}-{period}-acessos-{type}.xlsx
+    filename = f"2025-{month}-{period}-acessos-{file_type}.xlsx"
+    
+    return filename
+
 def main():
     """Main function"""
     print("🔄 Starting alunos filtering process...")
     
     # File paths
-    clientes_file = "frequencia.xlsx"
-    output_file = "alunos.xlsx"
-    agregadores_file = "agregadores.xlsx"
+    clientes_file = "FREQUENCIA.xlsx"
+    output_file = generate_output_filename("alunos")
+    agregadores_file = generate_output_filename("agregadores")
     
     # Check if file exists
     if not os.path.exists(clientes_file):
