@@ -108,7 +108,7 @@ def filter_alunos_by_contrato(df):
 def generate_output_filename(file_type):
     """
     Generate output filename based on current date
-    Format: 2025-{month}-{period}-acessos-{type}.xlsx
+    Format: {year}-{month}-{period}-acessos-{type}.xlsx
     
     Args:
         file_type: 'alunos' or 'agregadores'
@@ -130,8 +130,8 @@ def generate_output_filename(file_type):
     # Determine period based on day
     period = "1-3" if now.day < 20 else "4-7"
     
-    # Format: 2025-{month}-{period}-acessos-{type}.xlsx
-    filename = f"2025-{month}-{period}-acessos-{file_type}.xlsx"
+    # Format: {year}-{month}-{period}-acessos-{type}.xlsx
+    filename = f"{now.year}-{month}-{period}-acessos-{file_type}.xlsx"
     
     return filename
 
