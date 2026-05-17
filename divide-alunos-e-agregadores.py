@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Script to filter clientes.xlsx based on CONTRATO column and export ID, NOME, and CONTRATO
+Script to filter frequency data based on CONTRATO column and export ID, NOME, and CONTRATO.
+Accepts CSV or Excel as input.
 Creates two files:
 - alunos.xlsx: entries that do NOT contain WELLHUB, TOTALPASS, VIP or empty
 - agregadores.xlsx: entries that contain WELLHUB or TOTALPASS
@@ -9,12 +10,75 @@ Creates two files:
 import pandas as pd
 import os
 import sys
+import argparse
+import unicodedata
 from datetime import datetime
 
-def load_excel_file(file_path):
-    """Load Excel file and return DataFrame"""
+def parse_arguments():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description="Filter alunos by CONTRATO and export alunos/agregadores files."
+    )
+    parser.add_argument(
+        "input_file",
+        nargs="?",
+        default="FREQUENCIA.xlsx",
+        help="Input file path (.xlsx, .xls, .csv). Default: FREQUENCIA.xlsx",
+    )
+    return parser.parse_args()
+
+def normalize_column_key(column_name):
+    """Normalize column names for matching aliases"""
+    normalized = unicodedata.normalize('NFKD', str(column_name))
+    normalized = ''.join(char for char in normalized if not unicodedata.combining(char))
+    return normalized.strip().lower().replace(' ', '').replace('_', '')
+
+def normalize_required_columns(df):
+    """Normalize known column aliases to required internal names"""
+    aliases = {
+        'id': 'ID',
+        'nome': 'NOME',
+        'contrato': 'CONTRATO',
+        'contratosativos': 'CONTRATO'
+    }
+
+    rename_map = {}
+    existing_columns = set(df.columns)
+
+    for column in df.columns:
+        normalized_column = normalize_column_key(column)
+        target_column = aliases.get(normalized_column)
+
+        if not target_column or column == target_column:
+            continue
+
+        if target_column in existing_columns or target_column in rename_map.values():
+            continue
+
+        rename_map[column] = target_column
+
+    if rename_map:
+        df = df.rename(columns=rename_map)
+        print(f"ℹ️ Normalized columns: {rename_map}")
+
+    return df
+
+def load_input_file(file_path):
+    """Load CSV or Excel file and return DataFrame"""
+    extension = os.path.splitext(file_path)[1].lower()
     try:
-        df = pd.read_excel(file_path)
+        if extension in ['.xlsx', '.xls']:
+            df = pd.read_excel(file_path)
+        elif extension == '.csv':
+            try:
+                df = pd.read_csv(file_path, sep=None, engine='python', encoding='utf-8-sig')
+            except Exception:
+                df = pd.read_csv(file_path, sep=';', encoding='utf-8-sig')
+        else:
+            print(f"✗ Unsupported file extension: {extension}. Use .xlsx, .xls, or .csv")
+            return None
+
+        df = normalize_required_columns(df)
         print(f"✓ Loaded {file_path}: {len(df)} rows, {len(df.columns)} columns")
         return df
     except FileNotFoundError:
@@ -138,31 +202,31 @@ def generate_output_filename(file_type):
 def main():
     """Main function"""
     print("🔄 Starting alunos filtering process...")
-    
-    # File paths
-    clientes_file = "FREQUENCIA.xlsx"
+
+    args = parse_arguments()
+    input_file = args.input_file
     output_file = generate_output_filename("alunos")
     agregadores_file = generate_output_filename("agregadores")
     
     # Check if file exists
-    if not os.path.exists(clientes_file):
-        print(f"✗ Error: {clientes_file} not found")
+    if not os.path.exists(input_file):
+        print(f"✗ Error: {input_file} not found")
         sys.exit(1)
     
-    # Load Excel file
-    print(f"📖 Loading {clientes_file}...")
-    clientes_file = load_excel_file(clientes_file)
+    # Load input file
+    print(f"📖 Loading {input_file}...")
+    clientes_df = load_input_file(input_file)
     
-    if clientes_file is None:
+    if clientes_df is None:
         print("✗ Failed to load file")
         sys.exit(1)
     
     # Display file structure
-    display_file_structure(clientes_file, clientes_file)
+    display_file_structure(clientes_df, input_file)
     
     # Filter the data
     print(f"\n🔄 Filtering alunos...")
-    filtered_df, agregadores_df = filter_alunos_by_contrato(clientes_file)
+    filtered_df, agregadores_df = filter_alunos_by_contrato(clientes_df)
     
     if filtered_df is None or agregadores_df is None:
         print("✗ Failed to filter data")
@@ -197,11 +261,11 @@ def main():
         sys.exit(1)
     
     print(f"\n✨ Process completed successfully!")
-    print(f"   Original alunos entries: {len(clientes_file)}")
+    print(f"   Original alunos entries: {len(clientes_df)}")
     print(f"   Filtered entries (NOT containing keywords): {len(filtered_df)}")
     print(f"   Agregadores entries (WELLHUB + TOTALPASS): {len(agregadores_df)}")
     print(f"   Output files: {output_file}, {agregadores_file}")
     print(f"   Columns in output: ID, NOME, CONTRATO")
 
 if __name__ == "__main__":
-    main() 
+    main()
